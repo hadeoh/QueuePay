@@ -1,11 +1,14 @@
 package com.decagon.queuepay.security;
 
+import com.decagon.queuepay.service.MyUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -25,9 +28,11 @@ public class JwtProvider {
     @Value("{queuepay.jwtExpirationMs}")
     private Long validity;
 
-    @Autowired
-    public JwtProvider() {
+    private MyUserDetailsService myUserDetailsService;
 
+    @Autowired
+    public JwtProvider(MyUserDetailsService myUserDetailsService) {
+        this.myUserDetailsService = myUserDetailsService;
     }
 
     @PostConstruct
@@ -41,6 +46,11 @@ public class JwtProvider {
         Date validityTime = new Date(currentDate.getTime() + validity);
 
         return Jwts.builder().setClaims(claims).setIssuedAt(currentDate).setExpiration(validityTime).signWith(SignatureAlgorithm.HS256, secretKey).compact();
+    }
+
+    public Authentication getAuthentication(String token){
+        UserDetails userDetails = myUserDetailsService.loadUserByUsername(getEmail(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "");
     }
 
     public String getEmail(String token){
