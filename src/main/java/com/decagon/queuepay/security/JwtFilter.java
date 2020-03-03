@@ -2,6 +2,8 @@ package com.decagon.queuepay.security;
 
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,10 +28,12 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = jwtProvider.resolveToken(httpServletRequest);
         try{
             if (token != null && jwtProvider.validateToken(token)){
-
+                Authentication authentication = jwtProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }catch (JwtException ex){
             ex.getMessage();
         }
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }
