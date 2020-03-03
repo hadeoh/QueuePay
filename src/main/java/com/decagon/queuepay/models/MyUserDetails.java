@@ -1,10 +1,10 @@
 package com.decagon.queuepay.models;
 
+import com.decagon.queuepay.models.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +31,7 @@ public class MyUserDetails implements UserDetails {
 
     public static MyUserDetails build(User user){
         List<GrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(
-                role.getName().name())).collect(Collectors.toList());
+                role.name())).collect(Collectors.toList());
         return new MyUserDetails(
                 user.getId(),
                 user.getEmail(),

@@ -1,8 +1,8 @@
 package com.decagon.queuepay.service;
 
 import com.decagon.queuepay.models.MyUserDetails;
-import com.decagon.queuepay.models.User;
-import com.decagon.queuepay.repository.UserRepository;
+import com.decagon.queuepay.models.user.User;
+import com.decagon.queuepay.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
