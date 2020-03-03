@@ -9,14 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
 @Component
@@ -40,8 +42,9 @@ public class JwtProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String email){
+    public String createToken(String email, List<GrantedAuthority> roles){
         Claims claims = Jwts.claims().setSubject(email);
+        claims.put("auth", roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));
         Date currentDate = new Date();
         Date validityTime = new Date(currentDate.getTime() + validity);
 
@@ -50,7 +53,7 @@ public class JwtProvider {
 
     public Authentication getAuthentication(String token){
         UserDetails userDetails = myUserDetailsService.loadUserByUsername(getEmail(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "");
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     public String getEmail(String token){
@@ -77,6 +80,7 @@ public class JwtProvider {
     }
 
     public String generateToken(UserDetails userDetails){
-        return createToken(userDetails.getUsername());
+        List<GrantedAuthority> roles = new ArrayList<>();
+        return createToken(userDetails.getUsername(), roles);
     }
 }
