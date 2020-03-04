@@ -24,10 +24,10 @@ import java.util.zip.DataFormatException;
 @Component
 public class JwtProvider {
 
-    @Value("{queuepay.jwtSecretKey}")
+    @Value("${queuepay.jwtSecretKey}")
     private String secretKey;
 
-    @Value("{queuepay.jwtExpirationMs}")
+    @Value("${queuepay.jwtExpirationMs}")
     private Long validity;
 
     private MyUserDetailsService myUserDetailsService;

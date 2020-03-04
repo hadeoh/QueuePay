@@ -2,16 +2,19 @@ package com.decagon.queuepay.service;
 
 import com.decagon.queuepay.models.MyUserDetails;
 import com.decagon.queuepay.models.user.User;
+import com.decagon.queuepay.payload.LoginRequest;
 import com.decagon.queuepay.repositories.UserRepository;
 import com.decagon.queuepay.response.JwtResponse;
 import com.decagon.queuepay.security.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,10 +39,13 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity<?> authenticate(User user){
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+    public ResponseEntity<?> authenticate(LoginRequest loginRequest){
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
+
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(user.getEmail());
+        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(email);
         String token = jwtProvider.generateToken(userDetails);
 
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
