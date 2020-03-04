@@ -14,7 +14,6 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.UUID;
@@ -30,41 +29,26 @@ public class User extends AuditModel {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false, name = "id")
     private UUID id;
 
-    @NotNull
-    @NotBlank
+    @NotBlank(message = "Please name should not be empty")
     private String fullName;
 
-    @NotNull
-    @NotBlank
+    @NotBlank(message = "Please phone number should not be empty")
     private String phoneNumber;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @NotNull
-    @NotBlank
-    @Email
+    @NotBlank(message = "Please email should not be empty")
     private String email;
 
-    @NotNull
-    @NotBlank
+    @NotBlank(message = "Please password should not be empty")
     @JsonIgnoreProperties
     @Size(min = 6)
     private String password;
 
-
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     List<Role> roles;
-
-    private boolean isEnabled;
 
     @JsonIgnore
     private String emailVerificationToken;
@@ -72,67 +56,4 @@ public class User extends AuditModel {
     @JsonIgnore
     private EmailVerificationStatus emailVerificationStatus = EmailVerificationStatus.UNVERIFIED;
 
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-    }
-    public String getEmailVerificationToken() {
-        return emailVerificationToken;
-    }
-
-    public void setEmailVerificationToken(String emailVerificationToken) {
-        this.emailVerificationToken = emailVerificationToken;
-    }
-
-    public EmailVerificationStatus getEmailVerificationStatus() {
-        return emailVerificationStatus;
-    }
-
-    public void setEmailVerificationStatus(EmailVerificationStatus emailVerificationStatus) {
-        this.emailVerificationStatus = emailVerificationStatus;
-    }
 }
