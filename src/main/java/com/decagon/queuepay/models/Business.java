@@ -45,6 +45,6 @@ public class Business extends AuditModel {
 
     @NotNull
     @NotBlank
-    @Column(columnDefinition="text")
+    @Column(columnDefinition = "text")
     private String description;
 }
