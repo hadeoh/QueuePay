@@ -1,5 +1,6 @@
 package com.decagon.queuepay.response;
 
+import com.decagon.queuepay.models.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,13 @@ public class JwtResponse {
     private UUID id;
     private String type = "Bearer";
     private String email;
-    private List<String> roles;
+    private Object roles;
 
-    public JwtResponse(String token, UUID id, String email, List<String> roles) {
+    public JwtResponse(String token, UUID id, String email, Object roles) {
+        this.token = token;
+        this.id = id;
+        this.email = email;
+        this.roles = roles;
     }
+
 }

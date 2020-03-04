@@ -1,7 +1,7 @@
 package com.decagon.queuepay.controller;
 
-import com.decagon.queuepay.models.user.User;
 import com.decagon.queuepay.payload.LoginRequest;
+import com.decagon.queuepay.payload.SignupRequest;
 import com.decagon.queuepay.response.JwtResponse;
 import com.decagon.queuepay.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +24,13 @@ public class AuthenticationController {
         this.userService = userService;
     }
 
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest){
+        return userService.registration(signupRequest);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest){
-        JwtResponse response =  userService.authenticate(loginRequest);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return userService.authenticate(loginRequest);
     }
 }
