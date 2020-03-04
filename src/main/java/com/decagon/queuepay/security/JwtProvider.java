@@ -1,5 +1,7 @@
 package com.decagon.queuepay.security;
 
+import com.decagon.queuepay.models.user.Role;
+import com.decagon.queuepay.payload.MyUserDetails;
 import com.decagon.queuepay.service.MyUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -9,17 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.zip.DataFormatException;
 
 @Component
 public class JwtProvider {
@@ -42,9 +39,9 @@ public class JwtProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String email, List<GrantedAuthority> roles){
+    public String createToken(String email, List<Role> roles){
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("auth", roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));
+        claims.put("auth", roles);
         Date currentDate = new Date();
         Date validityTime = new Date(currentDate.getTime() + validity);
 
@@ -58,6 +55,10 @@ public class JwtProvider {
 
     public String getEmail(String token){
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public Object getRoles(String token){
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("auth");
     }
 
     public String resolveToken(HttpServletRequest request){
@@ -79,8 +80,4 @@ public class JwtProvider {
         return isValid;
     }
 
-    public String generateToken(UserDetails userDetails){
-        List<GrantedAuthority> roles = new ArrayList<>();
-        return createToken(userDetails.getUsername(), roles);
-    }
 }

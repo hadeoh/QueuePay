@@ -11,11 +11,26 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         dialect:  org.hibernate.dialect.MySQL5Dialect
+  mail:
+    host: smtp.mailtrap.io
+    port: 2525
+    username: 3692807a737288
+    password:  e43f90434b5687
 
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: true
+            required: true
 queuepay:
   jwtSecretKey: queuepaySecretKey
   jwtExpirationMs: 86400000
