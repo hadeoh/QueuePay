@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "transactions")
+@Table(name = "wallets")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

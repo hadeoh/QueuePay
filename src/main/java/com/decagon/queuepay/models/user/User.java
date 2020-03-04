@@ -13,7 +13,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.UUID;
@@ -29,22 +28,22 @@ public class User extends AuditModel {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false, name = "id")
     private UUID id;
 
-    @NotNull
-    @NotBlank
+    @NotBlank(message = "Please name should not be empty")
     private String fullName;
 
-    @NotNull
-    @NotBlank
+    @NotBlank(message = "Please phone number should not be empty")
     private String phoneNumber;
 
-    @NotNull
-    @NotBlank
+    @NotBlank(message = "Please email should not be empty")
+    private String email;
+
+    @NotBlank(message = "Please password should not be empty")
     @JsonIgnoreProperties
     @Size(min = 6)
     private String password;
-
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)

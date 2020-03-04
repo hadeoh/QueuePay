@@ -1,13 +1,13 @@
 # Server Connection
 server:
-  port: 8080
+  port: 8081
   servlet:
     context-path: /api/v1
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/QueuePay?createDatabaseIfNotExist=true&userSSL=false&serverTimezone=UTC
-    username: hadeoh
-    password: password
+    username: pius
+    password: 1996
   jpa:
     show-sql: true
     hibernate:
@@ -15,3 +15,7 @@ spring:
     properties:
       hibernate:
         dialect:  org.hibernate.dialect.MySQL5Dialect
+
+queuepay:
+  jwtSecretKey: queuepaySecretKey
+  jwtExpirationMs: 86400000
