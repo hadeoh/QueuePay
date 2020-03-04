@@ -1,4 +1,4 @@
-package com.decagon.queuepay.models;
+package com.decagon.queuepay.payload;
 
 import com.decagon.queuepay.models.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;

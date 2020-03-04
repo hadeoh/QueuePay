@@ -1,20 +1,16 @@
 package com.decagon.queuepay.service;
 
-import com.decagon.queuepay.models.MyUserDetails;
-import com.decagon.queuepay.models.user.User;
+import com.decagon.queuepay.payload.MyUserDetails;
 import com.decagon.queuepay.payload.LoginRequest;
 import com.decagon.queuepay.repositories.UserRepository;
 import com.decagon.queuepay.response.JwtResponse;
 import com.decagon.queuepay.security.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +35,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity<?> authenticate(LoginRequest loginRequest){
+    public JwtResponse authenticate(LoginRequest loginRequest){
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
 
@@ -52,9 +48,9 @@ public class UserService {
         List<String> roles = myUserDetails.getAuthorities().stream()
                 .map(role -> role.getAuthority()).collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(token,
+        return new JwtResponse(token,
                 myUserDetails.getId(),
                 myUserDetails.getEmail(),
-                roles));
+                roles);
     }
 }
