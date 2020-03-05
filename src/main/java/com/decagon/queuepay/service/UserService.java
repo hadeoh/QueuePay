@@ -2,6 +2,7 @@ package com.decagon.queuepay.service;
 
 import com.decagon.queuepay.models.user.Role;
 import com.decagon.queuepay.models.user.User;
+import com.decagon.queuepay.payload.ForgetPasswordRequest;
 import com.decagon.queuepay.payload.MyUserDetails;
 import com.decagon.queuepay.payload.LoginRequest;
 import com.decagon.queuepay.payload.SignupRequest;
@@ -51,13 +52,16 @@ public class UserService {
             return ResponseEntity.badRequest().body(new Message("This email already exists!"));
         }
         User user = new User();
+
+        String token = jwtProvider.createToken(signupRequest.getEmail(), user.getRoles());
+
         user.setPhoneNumber(signupRequest.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setEmail(signupRequest.getEmail());
         user.setFullName(signupRequest.getFullName());
         user.setRoles(Collections.singletonList(Role.ROLE_CLIENT));
+        user.setEmailVerificationToken(token);
         userRepository.save(user);
-        String token = jwtProvider.createToken(signupRequest.getEmail(), user.getRoles());
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(signupRequest.getEmail());
@@ -67,7 +71,7 @@ public class UserService {
                 + "http://localhost:8082/confirm-account?token=" + token);
 
         emailSenderService.sendEmail(mailMessage);
-        return ResponseEntity.ok(new Message("Registration successfull. Go to your email and confirm your account"));
+        return ResponseEntity.ok(new Message("Registration Successful. Go to your email and confirm your account"));
     }
 
     public ResponseEntity<?> authenticate(LoginRequest loginRequest){
@@ -77,14 +81,14 @@ public class UserService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-        System.out.println(myUserDetails.getAuthorities());
         String token = jwtProvider.createToken(email, loginRequest.getRoles());
-        Object strRoles = jwtProvider.getRoles(token);
-        System.out.println(strRoles);
 
-        return ResponseEntity.ok(new JwtResponse(token,
-                myUserDetails.getId(),
-                myUserDetails.getEmail(),
-                strRoles));
+//        return ResponseEntity.ok(new JwtResponse(token,
+//                myUserDetails.getId(),
+//                myUserDetails.getEmail(),
+//                strRoles));
+        return ResponseEntity.ok(new Message("Login Successful."));
     }
+
+
 }
