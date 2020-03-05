@@ -93,7 +93,6 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         String token = jwtProvider.createToken(email, loginRequest.getRoles());
-
         return ResponseEntity.ok(new JwtResponse(token, myUserDetails.getId(), myUserDetails.getEmail()));
     }
 }
