@@ -1,5 +1,6 @@
 package com.decagon.queuepay.payload;
 
+import com.decagon.queuepay.models.user.Role;
 import com.decagon.queuepay.models.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,10 +20,10 @@ public class MyUserDetails implements UserDetails {
     @JsonIgnore
     private String password;
 
-    private Collection<? extends GrantedAuthority> authorities;
+    private List<Role> authorities;
 
     public MyUserDetails(UUID id, String email, String password,
-                         Collection<? extends GrantedAuthority> authorities) {
+                         List<Role> authorities) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -30,8 +31,7 @@ public class MyUserDetails implements UserDetails {
     }
 
     public static MyUserDetails build(User user){
-        List<GrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(
-                role.name())).collect(Collectors.toList());
+        List<Role> authorities = user.getRoles();
         return new MyUserDetails(
                 user.getId(),
                 user.getEmail(),
@@ -59,9 +59,12 @@ public class MyUserDetails implements UserDetails {
         this.password = password;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public List<Role> getAuthorities() {
         return authorities;
+    }
+
+    public void setAuthorities(List<Role> authorities) {
+        this.authorities =  authorities;
     }
 
     @Override

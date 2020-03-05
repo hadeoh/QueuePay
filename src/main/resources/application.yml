@@ -3,8 +3,6 @@ spring:
     url: jdbc:mysql://localhost:3306/QueuePay?createDatabaseIfNotExist=true&userSSL=false&serverTimezone=UTC
     username: root
     password: possible_5344
-  servlet:
-    context-path: /api/v1
   jpa:
     show-sql: true
     hibernate:
@@ -12,7 +10,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
-
   mail:
     host: smtp.mailtrap.io
     port: 2525
@@ -31,6 +28,18 @@ spring:
             required: true
 server:
   port: 8082
+  servlet:
+    context-path: /api/v1
+  properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: true
+            required: true
 
 queuepay:
   jwtSecretKey: queuepaySecretKey
