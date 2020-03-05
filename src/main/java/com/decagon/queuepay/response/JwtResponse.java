@@ -16,13 +16,11 @@ public class JwtResponse {
     private UUID id;
     private String type = "Bearer";
     private String email;
-    private Object roles;
 
-    public JwtResponse(String token, UUID id, String email, Object roles) {
+    public JwtResponse(String token, UUID id, String email) {
         this.token = token;
         this.id = id;
         this.email = email;
-        this.roles = roles;
     }
 
 }

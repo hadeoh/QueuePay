@@ -1,5 +1,6 @@
 package com.decagon.queuepay.service;
 
+import com.decagon.queuepay.models.user.EmailVerificationStatus;
 import com.decagon.queuepay.models.user.User;
 import com.decagon.queuepay.payload.LoginRequest;
 import com.decagon.queuepay.payload.MyUserDetails;
@@ -14,6 +15,7 @@ import com.decagon.queuepay.response.JwtResponse;
 import com.decagon.queuepay.response.Message;
 import com.decagon.queuepay.security.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,10 +51,10 @@ public class UserService {
         this.emailSenderService = emailSenderService;
     }
 
-    public ResponseEntity<?> registration(@Valid SignupRequest signupRequest) {
+    public void  registration(@Valid SignupRequest signupRequest) throws Exception {
         boolean existing = userRepository.existsByEmail(signupRequest.getEmail());
         if (existing) {
-            return ResponseEntity.badRequest().body(new Message("This email already exists!"));
+            throw new  Exception("This email already exists!");
         }
         User user = new User();
         user.setPhoneNumber(signupRequest.getPhoneNumber());
@@ -68,11 +70,21 @@ public class UserService {
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("testing-70a156@inbox.mailtrap.io");
         mailMessage.setText("To confirm your account, please click here : "
-                + "http://localhost:8082/confirm-account?token=" + token);
+                + "http://localhost:3000/confirm-account?token=" + token);
 
         emailSenderService.sendEmail(mailMessage);
-        return ResponseEntity.ok(new Message("Registration successfull. Go to your email and confirm your account"));
+
     }
+
+    public void verifyRegistration(String token) throws Exception {
+        User user = userRepository.findByEmailVerificationToken(token);
+        if (user == null) {
+            throw new Exception("Unable to verify that you registered here");
+        }
+        user.setEmailVerificationStatus(EmailVerificationStatus.VERIFIED);
+        userRepository.save(user);
+    }
+
     public ResponseEntity<?> authenticate(LoginRequest loginRequest){
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
@@ -80,14 +92,8 @@ public class UserService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-        System.out.println(myUserDetails.getAuthorities());
         String token = jwtProvider.createToken(email, loginRequest.getRoles());
-        Object strRoles = jwtProvider.getRoles(token);
-        System.out.println(strRoles);
 
-        return ResponseEntity.ok(new JwtResponse(token,
-                myUserDetails.getId(),
-                myUserDetails.getEmail(),
-                strRoles));
+        return ResponseEntity.ok(new JwtResponse(token, myUserDetails.getId(), myUserDetails.getEmail()));
     }
 }
