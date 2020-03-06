@@ -1,10 +1,11 @@
 package com.decagon.queuepay.service;
 
-import com.decagon.queuepay.models.user.Role;
+import com.decagon.queuepay.exception.EmailException;
+import com.decagon.queuepay.models.user.EmailVerificationStatus;
 import com.decagon.queuepay.models.user.User;
-import com.decagon.queuepay.payload.ForgetPasswordRequest;
-import com.decagon.queuepay.payload.MyUserDetails;
 import com.decagon.queuepay.payload.LoginRequest;
+import com.decagon.queuepay.payload.MyUserDetails;
+import com.decagon.queuepay.models.user.Role;
 import com.decagon.queuepay.payload.SignupRequest;
 import com.decagon.queuepay.repositories.UserRepository;
 import com.decagon.queuepay.response.JwtResponse;
@@ -17,15 +18,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -46,10 +43,10 @@ public class UserService {
         this.emailSenderService = emailSenderService;
     }
 
-    public ResponseEntity<?> registration(@Valid SignupRequest signupRequest) {
+    public void registration(@Valid SignupRequest signupRequest) throws Exception {
         boolean existing = userRepository.existsByEmail(signupRequest.getEmail());
         if (existing) {
-            return ResponseEntity.badRequest().body(new Message("This email already exists!"));
+            throw new EmailException("This email already exists!");
         }
         User user = new User();
 
@@ -68,10 +65,18 @@ public class UserService {
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("testing-70a156@inbox.mailtrap.io");
         mailMessage.setText("To confirm your account, please click here : "
-                + "http://localhost:8082/confirm-account?token=" + token);
+                + "http://localhost:3000/confirm-account?token=" + token);
 
         emailSenderService.sendEmail(mailMessage);
-        return ResponseEntity.ok(new Message("Registration Successful. Go to your email and confirm your account"));
+    }
+
+    public void verifyRegistration(String token) throws Exception {
+        User user = userRepository.findByEmailVerificationToken(token);
+        if (user == null) {
+            throw new Exception("Unable to verify that you registered here");
+        }
+        user.setEmailVerificationStatus(EmailVerificationStatus.VERIFIED);
+        userRepository.save(user);
     }
 
     public ResponseEntity<?> authenticate(LoginRequest loginRequest){
@@ -82,12 +87,8 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         String token = jwtProvider.createToken(email, loginRequest.getRoles());
-
-//        return ResponseEntity.ok(new JwtResponse(token,
-//                myUserDetails.getId(),
-//                myUserDetails.getEmail(),
-//                strRoles));
         return ResponseEntity.ok(new Message("Login Successful."));
+//        return ResponseEntity.ok(new JwtResponse(token, myUserDetails.getId(), myUserDetails.getEmail()));
     }
 
 

@@ -12,6 +12,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Collections;
@@ -43,7 +44,6 @@ public class User extends AuditModel {
 
     @NotBlank(message = "Please password should not be empty")
     @JsonIgnoreProperties
-    @Size(min = 6, max = 16, message = "Please password should be between 6 to 8 characters lomg")
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -55,4 +55,5 @@ public class User extends AuditModel {
 
     @JsonIgnore
     private EmailVerificationStatus emailVerificationStatus = EmailVerificationStatus.UNVERIFIED;
+
 }
