@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface BusinessRepository extends JpaRepository<Business, UUID> {
-
+    Business findByName(String businessName);
 }
