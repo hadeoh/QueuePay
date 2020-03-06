@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface BusinessRepository extends JpaRepository<Business, UUID> {
-
+public interface BusinessRepository extends JpaRepository<Business, Integer> {
+    Business getOne(Integer businessId);
 }
