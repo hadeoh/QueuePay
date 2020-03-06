@@ -5,7 +5,7 @@ public class CashOut {
     private double amount;
     private String pin;
     private String bankName;
-    private String bankAccountName;
+    private String bankAccountNumber;
 
     public double getAmount() {
         return amount;
@@ -31,12 +31,12 @@ public class CashOut {
         this.bankName = bankName;
     }
 
-    public String getBankAccountName() {
-        return bankAccountName;
+    public String getBankAccountNumber() {
+        return bankAccountNumber;
     }
 
-    public void setBankAccountName(String bankAccountName) {
-        this.bankAccountName = bankAccountName;
+    public void setBankAccountNumber(String bankAccountNumber) {
+        this.bankAccountNumber = bankAccountNumber;
     }
 }
 

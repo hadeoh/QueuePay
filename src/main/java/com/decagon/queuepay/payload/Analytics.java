@@ -1,14 +1,11 @@
 package com.decagon.queuepay.payload;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
 public class Analytics {
     private int volume;
-    private AtomicReference<Double> value;
-    private AtomicInteger successfulTransaction;
-    private AtomicInteger failedTransaction;
-    private AtomicReference<Double> accountBalance;
+    private Double value;
+    private Integer successfulTransaction;
+    private Integer failedTransaction;
+    private Double accountBalance;
 
     public int getVolume(int transactionVolume) {
         return volume;
@@ -18,35 +15,35 @@ public class Analytics {
         this.volume = volume;
     }
 
-    public AtomicReference<Double> getValue() {
+    public Double getValue() {
         return value;
     }
 
-    public void setValue(AtomicReference<Double> value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 
-    public AtomicInteger getSuccessfulTransaction() {
+    public Integer getSuccessfulTransaction() {
         return successfulTransaction;
     }
 
-    public void setSuccessfulTransaction(AtomicInteger successfulTransaction) {
+    public void setSuccessfulTransaction(Integer successfulTransaction) {
         this.successfulTransaction = successfulTransaction;
     }
 
-    public AtomicInteger getFailedTransaction() {
+    public Integer getFailedTransaction() {
         return failedTransaction;
     }
 
-    public void setFailedTransaction(AtomicInteger failedTransaction) {
+    public void setFailedTransaction(Integer failedTransaction) {
         this.failedTransaction = failedTransaction;
     }
 
-    public AtomicReference<Double> getAccountBalance() {
+    public Double getAccountBalance() {
         return accountBalance;
     }
 
-    public void setAccountBalance(AtomicReference<Double> accountBalance) {
+    public void setAccountBalance(Double accountBalance) {
         this.accountBalance = accountBalance;
     }
 }

@@ -1,7 +1,5 @@
 package com.decagon.queuepay.service;
 
-
-import com.decagon.queuepay.models.BankAccount;
 import com.decagon.queuepay.models.Business;
 import com.decagon.queuepay.models.transaction.Transaction;
 import com.decagon.queuepay.models.transaction.TransactionStatus;
@@ -9,16 +7,17 @@ import com.decagon.queuepay.models.transaction.TransactionType;
 import com.decagon.queuepay.models.wallet.Wallet;
 import com.decagon.queuepay.payload.Analytics;
 import com.decagon.queuepay.payload.CashOut;
-import com.decagon.queuepay.repositories.*;
+import com.decagon.queuepay.repositories.BankAccountRepository;
+import com.decagon.queuepay.repositories.BusinessRepository;
+import com.decagon.queuepay.repositories.TransactionRepository;
+import com.decagon.queuepay.repositories.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
+
 
 @Service
 public class CashOutService {
@@ -50,22 +49,26 @@ public class CashOutService {
 
 
     @Transactional
-    public Transaction cashOut(UUID businessId, UUID walletId, CashOut cashOut) throws Exception {
-
-        Optional<BankAccount> bank = Optional.ofNullable(bankAccountRepository.findByBusinessId(businessId));
+    public Transaction cashOut(Integer businessId, Integer walletId, CashOut cashOut) throws Exception {
+        System.out.println(businessRepository.findAll());
+        //Optional<BankAccount> bank = bankAccountRepository.findById(businessId);
         Optional<Wallet> wallet = walletRepository.findById(walletId);
 
 
-        if (!(wallet.get().getPin().equals(cashOut.getPin()))) { throw new Exception("Incorrect password"); }
-        if (!(bank.get().getAccountNumber().equals(cashOut.getBankAccountName()))) { throw new Exception("Incorrect account number");}
-        if (cashOut.getAmount() > wallet.get().getBalance()) { throw new Exception("Insufficient balance");}
+        if ((wallet.get().getPin().equals(cashOut.getPin()))) {
+            throw new Exception("Incorrect password");
+        }
+        //if (!(bank.get().getAccountNumber().equals(cashOut.getBankAccountNumber()))) { throw new Exception("Incorrect account number");}
+        if (cashOut.getAmount() > wallet.get().getBalance()) {
+            throw new Exception("Insufficient balance");
+        }
 
-        Business business = businessRepository.getOne(businessId);
+        Optional<Business> business = businessRepository.findById(businessId);
         Double cashOutAmount = cashOut.getAmount();
         wallet.get().setBalance(wallet.get().getBalance() - cashOutAmount);
-        wallet.get().setBusiness(business);
+        wallet.get().setBusiness(business.get());
         Transaction transaction = new Transaction();
-        transaction.setBusiness(business);
+        transaction.setBusiness(business.get());
         transaction.setWallet(wallet.get());
         transaction.setAmount(cashOutAmount);
         transaction.setTransactionType(TransactionType.DEBIT);
@@ -75,33 +78,30 @@ public class CashOutService {
     }
 
 
-    public Analytics getAnalytics(UUID businessId, UUID walletId){
-        Transaction transactions = transactionRepository.findAllByBusinessId(businessId);
-        int transactionVolume = transactions.toString().length();
-        AtomicReference<Double> value = new AtomicReference<>(0.0);
-        AtomicReference<Double> accountBalance = new AtomicReference<>(0.0);
-        AtomicInteger successfulTransaction = new AtomicInteger();
-        AtomicInteger failedTransaction = new AtomicInteger();
+    public Analytics getAnalytics(Integer businessId) {
+        List<Transaction> transactions = transactionRepository.findAllByBusinessId(businessId);
+        Integer transactionVolume = 0;
+        Double value = 0.0;
+        Double accountBalance = 0.0;
+        Integer successfulTransaction = 0;
+        Integer failedTransaction = 0;
         Analytics analytics = new Analytics();
 
-        Stream.of(transactions).filter(transaction->
-        {
-            if(transaction.getStatus().equals("SUCCESSFUL")){
-                successfulTransaction.getAndIncrement();
+        for (Transaction trans : transactions) {
+            transactionVolume++;
+            value += trans.getAmount();
+            if (trans.getStatus().equals(TransactionStatus.SUCCESSFUL)) {
+                successfulTransaction++;
+            } else if (trans.getStatus().equals(TransactionStatus.FAILED)) {
+                failedTransaction++;
+                System.out.println("im here 1");
+            } if (trans.getTransactionType().equals(TransactionType.CREDIT)) {
+                accountBalance += trans.getAmount();
+                System.out.println("im here2");
+            } else if (trans.getTransactionType().equals(TransactionType.DEBIT)) {
+                accountBalance -= trans.getAmount();
             }
-            else if(transaction.getStatus().equals("FAILED")){
-                failedTransaction.getAndIncrement();
-            }
-            else if(transaction.getTransactionType().equals("CREDIT")){
-                accountBalance.updateAndGet(v -> v + transaction.getAmount());
-                value.updateAndGet(v -> new Double((double) (v + transaction.getAmount())));
-            }
-            else if(transaction.getTransactionType().equals("DEBIT")){
-                accountBalance.updateAndGet(v -> v - transaction.getAmount());
-                value.updateAndGet(v -> new Double((double) (v + transaction.getAmount())));
-            }
-            return true;
-        });
+        }
 
         analytics.setAccountBalance(accountBalance);
         analytics.setFailedTransaction(failedTransaction);
@@ -111,5 +111,6 @@ public class CashOutService {
         return analytics;
     }
 }
+
 
 

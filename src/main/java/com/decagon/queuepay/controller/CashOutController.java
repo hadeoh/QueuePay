@@ -21,18 +21,17 @@ public class CashOutController {
         this.cashOutService = cashOutService;
     }
 
-    @RequestMapping(path = "business/{businessId}/wallet/{walletId}/cashout", method = RequestMethod.PATCH)
+    @PatchMapping(path = "business/{businessId}/wallet/{walletId}/cashout")
     public ResponseEntity<Transaction> cashOut(
-            @PathVariable(value = "businessId") UUID businessId,
-            @PathVariable(value = "walletId") UUID walletId,
+            @PathVariable(value = "businessId") Integer businessId,
+            @PathVariable(value = "walletId") Integer walletId,
             @Valid @RequestBody CashOut cashOut) throws Exception {
-        return new ResponseEntity<>(cashOutService.cashOut(businessId, walletId, cashOut), HttpStatus.ACCEPTED);
+        return new ResponseEntity<Transaction>(cashOutService.cashOut(businessId, walletId, cashOut), HttpStatus.OK);
     }
 
-    @RequestMapping(path = "business/{businessId}/wallet/{walletId}/analytics", method = RequestMethod.GET)
-    public ResponseEntity<Analytics> analysis(@PathVariable(value = "businessId") UUID businessId,
-                                              @PathVariable(value = "walletId") UUID walletId){
-        return new ResponseEntity<>(cashOutService.getAnalytics(businessId, walletId), HttpStatus.OK);
+    @GetMapping(path = "business/{businessId}/analytics")
+    public ResponseEntity<Analytics> analysis(@PathVariable(value = "businessId") Integer businessId){
+        return new ResponseEntity<Analytics>(cashOutService.getAnalytics(businessId), HttpStatus.OK);
     }
 
 }
