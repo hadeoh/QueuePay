@@ -32,10 +32,8 @@ public class AnalyticsService {
                 successfulTransaction++;
             } else if (trans.getStatus().equals(TransactionStatus.FAILED)) {
                 failedTransaction++;
-                System.out.println("im here 1");
             } if (trans.getTransactionType().equals(TransactionType.CREDIT)) {
                 accountBalance += trans.getAmount();
-                System.out.println("im here2");
             } else if (trans.getTransactionType().equals(TransactionType.DEBIT)) {
                 accountBalance -= trans.getAmount();
             }

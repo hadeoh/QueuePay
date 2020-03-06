@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WalletService {
@@ -17,13 +18,12 @@ public class WalletService {
     @Autowired
     private BusinessRepository businessRepository;
 
-    public Wallet walletByBusinessId(Business business){
-//        Business business1 = businessRepository.getOne(business.getId());
-        return walletRepository.findByBusinessId(business.getId());
-    }
-
-    public List<Wallet> findAllWallets(){
-        return walletRepository.findAll();
+    public List<Wallet> findAllWallets(Integer businessId) throws Exception {
+        Optional<Business> business = businessRepository.findById(businessId);
+        if (business.isEmpty()) {
+            throw new Exception("Business not found");
+        }
+        return walletRepository.findByBusiness(business.get());
     }
 }
 

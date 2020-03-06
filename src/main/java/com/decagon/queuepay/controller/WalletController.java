@@ -14,15 +14,10 @@ public class WalletController {
     @Autowired
     private WalletService walletService;
 
-    @GetMapping("/wallet")
-    public ResponseEntity getWallet(@RequestBody Business business){
-         Wallet wallet = walletService.walletByBusinessId(business);
-         return  ResponseEntity.ok().body(wallet);
-    }
 
-    @GetMapping("/wallets")
-    public ResponseEntity<List<Wallet>> getAllWallets(){
-         List wallets = walletService.findAllWallets();
+    @GetMapping("{businessId}/wallets")
+    public ResponseEntity<List<Wallet>> getAllWallets(@PathVariable Integer businessId) throws Exception {
+         List wallets = walletService.findAllWallets(businessId);
          return  ResponseEntity.ok().body(wallets);
     }
 }
