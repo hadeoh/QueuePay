@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/QueuePay?createDatabaseIfNotExist=true&userSSL=false&serverTimezone=UTC
     username: root
-    password: possible_5344
+    password: saved@M0519
   jpa:
     show-sql: true
     hibernate:
@@ -13,8 +13,8 @@ spring:
   mail:
     host: smtp.mailtrap.io
     port: 2525
-    username: 3692807a737288
-    password:  e43f90434b5687
+    username: 32048abc68d2eb
+    password: b4043d7c6b5ad3
 
     properties:
       mail:

@@ -13,11 +13,11 @@ import java.util.UUID;
 public class JwtResponse {
 
     private String token;
-    private UUID id;
+    private Integer id;
     private String type = "Bearer";
     private String email;
 
-    public JwtResponse(String token, UUID id, String email) {
+    public JwtResponse(String token, Integer id, String email) {
         this.token = token;
         this.id = id;
         this.email = email;

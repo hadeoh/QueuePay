@@ -7,12 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
+
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -23,9 +21,8 @@ import java.util.UUID;
 public class Transaction extends AuditModel {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "walletId", nullable = false)
@@ -40,14 +37,11 @@ public class Transaction extends AuditModel {
     private CardType cardType;
 
     @NotNull
-    @NotBlank
     private Double amount;
 
     @NotNull
-    @NotBlank
     private TransactionStatus status;
 
     @NotNull
-    @NotBlank
     private TransactionType transactionType;
 }
