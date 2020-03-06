@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +30,10 @@ public class BusinessService {
 
     @Autowired
     private JwtProvider jwtProvider;
+
+    public List<Business> findAllBusiness(){
+        return businessRepository.findAll();
+    }
 
     public void businessRegistration(Business business, Wallet wallet, HttpServletRequest req) throws Exception {
         String token = jwtProvider.resolveToken(req);
