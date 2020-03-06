@@ -42,7 +42,6 @@ public class User extends AuditModel {
 
     @NotBlank(message = "Please password should not be empty")
     @JsonIgnoreProperties
-    @Size(min = 6)
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)

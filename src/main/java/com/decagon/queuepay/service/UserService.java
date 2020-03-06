@@ -1,36 +1,28 @@
 package com.decagon.queuepay.service;
 
+import com.decagon.queuepay.exception.EmailException;
 import com.decagon.queuepay.models.user.EmailVerificationStatus;
 import com.decagon.queuepay.models.user.User;
 import com.decagon.queuepay.payload.LoginRequest;
 import com.decagon.queuepay.payload.MyUserDetails;
-import com.decagon.queuepay.payload.UserRegistrationDto;
 import com.decagon.queuepay.models.user.Role;
-import com.decagon.queuepay.models.user.User;
-import com.decagon.queuepay.payload.MyUserDetails;
-import com.decagon.queuepay.payload.LoginRequest;
 import com.decagon.queuepay.payload.SignupRequest;
 import com.decagon.queuepay.repositories.UserRepository;
 import com.decagon.queuepay.response.JwtResponse;
 import com.decagon.queuepay.response.Message;
 import com.decagon.queuepay.security.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -51,19 +43,22 @@ public class UserService {
         this.emailSenderService = emailSenderService;
     }
 
-    public void  registration(@Valid SignupRequest signupRequest) throws Exception {
+    public void registration(@Valid SignupRequest signupRequest) throws Exception {
         boolean existing = userRepository.existsByEmail(signupRequest.getEmail());
         if (existing) {
-            throw new  Exception("This email already exists!");
+            throw new EmailException("This email already exists!");
         }
         User user = new User();
+
+        String token = jwtProvider.createToken(signupRequest.getEmail(), user.getRoles());
+
         user.setPhoneNumber(signupRequest.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setEmail(signupRequest.getEmail());
         user.setFullName(signupRequest.getFullName());
         user.setRoles(Collections.singletonList(Role.ROLE_CLIENT));
+        user.setEmailVerificationToken(token);
         userRepository.save(user);
-        String token = jwtProvider.createToken(signupRequest.getEmail(), user.getRoles());
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(signupRequest.getEmail());
@@ -73,7 +68,6 @@ public class UserService {
                 + "http://localhost:3000/confirm-account?token=" + token);
 
         emailSenderService.sendEmail(mailMessage);
-
     }
 
     public void verifyRegistration(String token) throws Exception {
@@ -93,6 +87,9 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         String token = jwtProvider.createToken(email, loginRequest.getRoles());
-        return ResponseEntity.ok(new JwtResponse(token, myUserDetails.getId(), myUserDetails.getEmail()));
+        return ResponseEntity.ok(new Message("Login Successful."));
+//        return ResponseEntity.ok(new JwtResponse(token, myUserDetails.getId(), myUserDetails.getEmail()));
     }
+
+
 }

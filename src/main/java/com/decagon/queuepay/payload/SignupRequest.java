@@ -28,7 +28,7 @@ public class SignupRequest {
     private String email;
 
     @NotBlank(message = "Please password should not be empty")
-    @Size(min = 6)
+    @Size(min = 6, max = 16, message = "Please password should be between 6 to 16 characters long")
     private String password;
 
 }
