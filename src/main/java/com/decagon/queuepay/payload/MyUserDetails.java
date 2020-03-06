@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class MyUserDetails implements UserDetails {
 
-    private UUID id;
+    private Integer id;
     private String email;
 
     @JsonIgnore
@@ -22,7 +22,7 @@ public class MyUserDetails implements UserDetails {
 
     private List<Role> authorities;
 
-    public MyUserDetails(UUID id, String email, String password,
+    public MyUserDetails(Integer id, String email, String password,
                          List<Role> authorities) {
         this.id = id;
         this.email = email;
@@ -39,11 +39,11 @@ public class MyUserDetails implements UserDetails {
                 authorities);
     }
 
-    public UUID getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -18,8 +18,8 @@ public class WalletService {
     private BusinessRepository businessRepository;
 
     public Wallet walletByBusinessId(Business business){
-        Business business1 = businessRepository.findByName(business.getName());
-        return walletRepository.findByBusiness(business1.getId());
+//        Business business1 = businessRepository.getOne(business.getId());
+        return walletRepository.findByBusinessId(business.getId());
     }
 
     public List<Wallet> findAllWallets(){

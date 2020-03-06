@@ -22,9 +22,8 @@ import java.util.UUID;
 public class Wallet extends AuditModel {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     private Double balance = 0.00;
 

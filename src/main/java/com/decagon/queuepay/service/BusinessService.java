@@ -44,8 +44,10 @@ public class BusinessService {
         }
         business.setUser(user.get());
         business = businessRepository.save(business);
+        System.out.println(business.getId());
 
         wallet.setBusiness(business);
         walletRepository.save(wallet);
+        System.out.println(wallet.getId());
     }
 }

@@ -28,10 +28,8 @@ import java.util.UUID;
 public class User extends AuditModel {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(updatable = false, nullable = false, name = "id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @NotBlank(message = "Please name should not be empty")
     private String fullName;
