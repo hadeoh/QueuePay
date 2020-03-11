@@ -2,6 +2,7 @@ package com.decagon.queuepay.models.wallet;
 
 import com.decagon.queuepay.models.AuditModel;
 import com.decagon.queuepay.models.Business;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

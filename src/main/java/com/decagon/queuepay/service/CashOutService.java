@@ -28,25 +28,33 @@ public class CashOutService {
 
 
     @Transactional
-    public Transaction cashOut(Integer businessId, Integer walletId, CashOut cashOut) throws Exception {
-        //Optional<BankAccount> bank = bankAccountRepository.findById(businessId);
+    public String cashOut(Integer businessId, Integer walletId, CashOut cashOut) throws Exception {
         Optional<Wallet> wallet = walletRepository.findById(walletId);
 
-        if ((wallet.get().getPin().equals(cashOut.getPin()))) { throw new Exception("Incorrect password"); }
-        //if (!(bank.get().getAccountNumber().equals(cashOut.getBankAccountNumber()))) { throw new Exception("Incorrect account number");}
-        if (cashOut.getAmount() > wallet.get().getBalance()) { throw new Exception("Insufficient balance"); }
+        if (wallet.isPresent()) {
+            if (!wallet.get().getPin().equals(cashOut.getPin())) {
+                throw new Exception("Incorrect pin");
+            }
+            if (cashOut.getAmount() > wallet.get().getBalance()) {
+                throw new Exception("Insufficient balance");
+            }
 
-        Optional<Business> business = businessRepository.findById(businessId);
-        Double cashOutAmount = cashOut.getAmount();
-        wallet.get().setBalance(wallet.get().getBalance() - cashOutAmount);
-        wallet.get().setBusiness(business.get());
-        Transaction transaction = new Transaction();
-        transaction.setBusiness(business.get());
-        transaction.setWallet(wallet.get());
-        transaction.setAmount(cashOutAmount);
-        transaction.setTransactionType(TransactionType.DEBIT);
-        transaction.setStatus(TransactionStatus.SUCCESSFUL);
+            Optional<Business> business = businessRepository.findById(businessId);
+            Double cashOutAmount = cashOut.getAmount();
+            wallet.get().setBalance(wallet.get().getBalance() - cashOutAmount);
+            wallet.get().setBusiness(business.get());
+            walletRepository.save(wallet.get());
+            Transaction transaction = new Transaction();
+            transaction.setBusiness(business.get());
+            transaction.setWallet(wallet.get());
+            transaction.setAmount(cashOutAmount);
+            transaction.setTransactionType(TransactionType.DEBIT);
+            transaction.setStatus(TransactionStatus.SUCCESSFUL);
 
-        return transactionRepository.save(transaction);
+            transactionRepository.save(transaction);
+            return "Successful";
+        } else {
+            throw new Exception("Wallet not present");
+        }
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -26,15 +27,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private MyUserDetailsService myUserDetailsService;
     private AuthEntryPoint authEntryPoint;
+    private JwtFilter jwtFilter;
 
     @Autowired
-    public SecurityConfig(MyUserDetailsService myUserDetailsService, AuthEntryPoint authEntryPoint){
+    public SecurityConfig(MyUserDetailsService myUserDetailsService, AuthEntryPoint authEntryPoint, JwtFilter jwtFilter){
         this.myUserDetailsService = myUserDetailsService;
         this.authEntryPoint = authEntryPoint;
+        this.jwtFilter = jwtFilter;
     }
-
-    @Bean
-    public JwtFilter jwtFilter(){ return new JwtFilter();}
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception{
@@ -57,9 +57,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(authEntryPoint)
                 .and().authorizeRequests().antMatchers("/auth/**").permitAll()
-                .antMatchers().permitAll()
-                .anyRequest().authenticated();
-        http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .anyRequest().authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 }

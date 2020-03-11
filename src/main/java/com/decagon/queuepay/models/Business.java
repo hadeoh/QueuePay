@@ -1,6 +1,7 @@
 package com.decagon.queuepay.models;
 
 import com.decagon.queuepay.models.user.User;
+import com.decagon.queuepay.models.wallet.Wallet;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -46,4 +48,5 @@ public class Business extends AuditModel {
     @NotBlank
     @Column(columnDefinition = "text")
     private String description;
+
 }

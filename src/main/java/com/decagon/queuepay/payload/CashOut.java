@@ -1,42 +1,30 @@
 package com.decagon.queuepay.payload;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class CashOut {
 
-    private double amount;
+    @NotNull
+    private Double amount;
+
+    @NotNull
+    @NotBlank(message = "Please provide your wallet pin")
     private String pin;
+
+    @NotNull
+    @NotBlank(message = "Please provide a bank name")
     private String bankName;
+
+    @NotNull
+    @NotBlank(message = "Please provide a bank account number")
     private String bankAccountNumber;
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public String getPin() {
-        return pin;
-    }
-
-    public void setPin(String password) {
-        this.pin = pin;
-    }
-
-    public String getBankName() {
-        return bankName;
-    }
-
-    public void setBankName(String bankName) {
-        this.bankName = bankName;
-    }
-
-    public String getBankAccountNumber() {
-        return bankAccountNumber;
-    }
-
-    public void setBankAccountNumber(String bankAccountNumber) {
-        this.bankAccountNumber = bankAccountNumber;
-    }
 }
 
