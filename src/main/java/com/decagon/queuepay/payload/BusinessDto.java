@@ -20,28 +20,21 @@ public class BusinessDto {
     @JsonIgnore
     private User user;
 
-    @NotNull
     @NotBlank(message = "Please name is required")
     private String name;
 
-    @NotNull
     @NotBlank(message = "Please logo url is required")
     private String logoUrl;
 
-    @NotNull
     @NotBlank(message = "Please CAC Document Url is required")
-    private String CACDocumentUrl;
+    private String cacDocumentUrl;
 
-    @NotNull
     @NotBlank(message = "Please description is required")
     @Column(columnDefinition = "text")
     private String description;
 
-    @NotNull
-    @NotNull(message = "Select a wallet type")
     private WalletType walletType;
 
-    @NotNull
     @NotBlank(message = "Please pin is required")
     private String pin;
 

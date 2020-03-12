@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -29,32 +30,35 @@ public class CashOutService {
 
     @Transactional
     public String cashOut(Integer businessId, Integer walletId, CashOut cashOut) throws Exception {
-        Optional<Wallet> wallet = walletRepository.findById(walletId);
+        Business business = businessRepository.findById(businessId).orElse(null);
+        if (business != null){
+            Wallet wallet = walletRepository.findById(walletId).orElse(null);
+            if (wallet != null){
+                if (wallet.getBusiness().getId().equals(business.getId())){
+                    if (!wallet.getPin().equals(cashOut.getPin())) {
+                        throw new Exception("Incorrect pin");
+                    }
+                    if (cashOut.getAmount() > wallet.getBalance()) {
+                        throw new Exception("Insufficient balance");
+                    }
+                    Double cashOutAmount = cashOut.getAmount();
+                    wallet.setBalance(wallet.getBalance() - cashOutAmount);
+                    wallet.setBusiness(business) ;
+                    walletRepository.save(wallet);
 
-        if (wallet.isPresent()) {
-            if (!wallet.get().getPin().equals(cashOut.getPin())) {
-                throw new Exception("Incorrect pin");
+                    Transaction transaction = new Transaction();
+                    transaction.setBusiness(business);
+                    transaction.setWallet(wallet);
+                    transaction.setAmount(cashOutAmount);
+                    transaction.setTransactionType(TransactionType.DEBIT);
+                    transaction.setStatus(TransactionStatus.SUCCESSFUL);
+
+                    transactionRepository.save(transaction);
+                    return "Successful";
+                }
             }
-            if (cashOut.getAmount() > wallet.get().getBalance()) {
-                throw new Exception("Insufficient balance");
-            }
-
-            Optional<Business> business = businessRepository.findById(businessId);
-            Double cashOutAmount = cashOut.getAmount();
-            wallet.get().setBalance(wallet.get().getBalance() - cashOutAmount);
-            wallet.get().setBusiness(business.get());
-            walletRepository.save(wallet.get());
-            Transaction transaction = new Transaction();
-            transaction.setBusiness(business.get());
-            transaction.setWallet(wallet.get());
-            transaction.setAmount(cashOutAmount);
-            transaction.setTransactionType(TransactionType.DEBIT);
-            transaction.setStatus(TransactionStatus.SUCCESSFUL);
-
-            transactionRepository.save(transaction);
-            return "Successful";
-        } else {
-            throw new Exception("Wallet not present");
+            throw new Exception("Wallet not available");
         }
+        throw new Exception("Business not available");
     }
 }

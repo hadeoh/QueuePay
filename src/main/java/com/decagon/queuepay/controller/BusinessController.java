@@ -23,9 +23,6 @@ public class BusinessController {
     private BusinessService businessService;
 
     @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
     private MapValidationErrorService mapValidationErrorService;
 
     @GetMapping
