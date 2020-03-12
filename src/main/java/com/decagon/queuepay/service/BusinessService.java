@@ -44,20 +44,17 @@ public class BusinessService {
 
         Business business = new Business();
         Wallet wallet = new Wallet();
-        System.out.println("first");
         business.setUser(user.get());
         business.setName(businessDto.getName());
         business.setLogoUrl(businessDto.getLogoUrl());
-        business.setCACDocumentUrl(businessDto.getCACDocumentUrl());
+        business.setCacDocumentUrl(businessDto.getCacDocumentUrl());
         business.setDescription(businessDto.getDescription());
         wallet.setPin(businessDto.getPin());
         wallet.setWalletType(businessDto.getWalletType());
 
         businessRepository.save(business);
-        System.out.println(business.getId());
 
         wallet.setBusiness(business);
         walletRepository.save(wallet);
-        System.out.println(wallet.getId());
     }
 }

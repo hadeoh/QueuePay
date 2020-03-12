@@ -28,7 +28,6 @@ public class Wallet extends AuditModel {
 
     private Double balance = 0.00;
 
-    @NotNull
     private WalletType walletType;
 
     @NotNull

@@ -42,7 +42,7 @@ public class Business extends AuditModel {
 
     @NotNull
     @NotBlank
-    private String CACDocumentUrl;
+    private String cacDocumentUrl;
 
     @NotNull
     @NotBlank
