@@ -52,8 +52,7 @@ public class AuthenticationController {
         if (errorMap != null){
             return errorMap;
         }
-        userService.authenticate(loginRequest);
-        return ResponseEntity.ok(new Message("Login successful!"));
+       return userService.authenticate(loginRequest);
     }
 
 }

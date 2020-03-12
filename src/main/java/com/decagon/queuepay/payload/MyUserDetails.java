@@ -16,16 +16,20 @@ public class MyUserDetails implements UserDetails {
 
     private Integer id;
     private String email;
+    private String phoneNumber;
+    private String fullName;
 
     @JsonIgnore
     private String password;
 
     private List<Role> authorities;
 
-    public MyUserDetails(Integer id, String email, String password,
+    public MyUserDetails(Integer id, String email, String phoneNumber, String fullName, String password,
                          List<Role> authorities) {
         this.id = id;
         this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.fullName = fullName;
         this.password = password;
         this.authorities = authorities;
     }
@@ -35,6 +39,8 @@ public class MyUserDetails implements UserDetails {
         return new MyUserDetails(
                 user.getId(),
                 user.getEmail(),
+                user.getPhoneNumber(),
+                user.getFullName(),
                 user.getPassword(),
                 authorities);
     }
@@ -53,6 +59,22 @@ public class MyUserDetails implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public void setPassword(String password) {

@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/business")
+@CrossOrigin
 public class WalletController {
     @Autowired
     private WalletService walletService;
 
-
     @GetMapping("{businessId}/wallets")
     public ResponseEntity<List<Wallet>> getAllWallets(@PathVariable Integer businessId) throws Exception {
-         List wallets = walletService.findAllWallets(businessId);
-         return  ResponseEntity.ok().body(wallets);
+         List<Wallet> wallets = walletService.findWalletsByBusinessId(businessId);
+         return ResponseEntity.ok().body(wallets);
     }
 }

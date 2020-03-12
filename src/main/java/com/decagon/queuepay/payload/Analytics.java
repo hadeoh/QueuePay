@@ -1,11 +1,17 @@
 package com.decagon.queuepay.payload;
 
+import com.decagon.queuepay.models.Business;
+import com.decagon.queuepay.models.wallet.Wallet;
+
+import java.util.List;
+
 public class Analytics {
     private int volume;
     private Double value;
     private Integer successfulTransaction;
     private Integer failedTransaction;
     private Double accountBalance;
+    private List<Wallet> wallet;
 
     public int getVolume(int transactionVolume) {
         return volume;
@@ -45,5 +51,13 @@ public class Analytics {
 
     public void setAccountBalance(Double accountBalance) {
         this.accountBalance = accountBalance;
+    }
+
+    public List<Wallet> getWallet() {
+        return wallet;
+    }
+
+    public void setWallet(List<Wallet> wallet) {
+        this.wallet = wallet;
     }
 }

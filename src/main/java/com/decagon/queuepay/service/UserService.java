@@ -12,6 +12,7 @@ import com.decagon.queuepay.response.JwtResponse;
 import com.decagon.queuepay.response.Message;
 import com.decagon.queuepay.security.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -87,8 +88,8 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         String token = jwtProvider.createToken(email, loginRequest.getRoles());
-        return ResponseEntity.ok(new Message("Login Successful."));
-//        return ResponseEntity.ok(new JwtResponse(token, myUserDetails.getId(), myUserDetails.getEmail()));
+
+        return ResponseEntity.ok(new JwtResponse(token, myUserDetails.getId(), myUserDetails.getEmail(), myUserDetails.getFullName().toUpperCase(), myUserDetails.getPhoneNumber()));
     }
 
 

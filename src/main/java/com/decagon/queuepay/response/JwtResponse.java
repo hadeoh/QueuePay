@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 public class JwtResponse {
 
@@ -16,11 +15,15 @@ public class JwtResponse {
     private Integer id;
     private String type = "Bearer";
     private String email;
+    private String fullName;
+    private String phoneNumber;
 
-    public JwtResponse(String token, Integer id, String email) {
+    public JwtResponse(String token, Integer id, String email, String fullName, String phoneNumber) {
         this.token = token;
         this.id = id;
         this.email = email;
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
     }
 
 }

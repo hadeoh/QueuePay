@@ -18,12 +18,12 @@ public class WalletService {
     @Autowired
     private BusinessRepository businessRepository;
 
-    public List<Wallet> findAllWallets(Integer businessId) throws Exception {
+    public List<Wallet> findWalletsByBusinessId(Integer businessId) throws Exception {
         Optional<Business> business = businessRepository.findById(businessId);
         if (business.isEmpty()) {
             throw new Exception("Business not found");
         }
-        return walletRepository.findByBusiness(business.get());
+        return walletRepository.findByBusinessId(business.get().getId());
     }
 }
 
