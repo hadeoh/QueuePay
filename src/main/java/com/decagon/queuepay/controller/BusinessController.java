@@ -28,8 +28,7 @@ public class BusinessController {
 
     @GetMapping("/all")
     public ResponseEntity<List<Business>> getAllBusiness(Principal principal){
-        System.out.println(principal.getName());
-        List<Business> allBusiness = businessService.findAllBusiness();
+        List<Business> allBusiness = businessService.findAllBusiness(principal.getName());
        return ResponseEntity.ok().body(allBusiness);
     }
 
