@@ -22,7 +22,7 @@ public class AnalyticsController {
     public ResponseEntity<?> analysis(@PathVariable(value = "businessId") Integer businessId){
         Analytics analytics = analyticsService.getAnalytics(businessId);
         if (analytics != null){
-            return new ResponseEntity<Analytics>(analyticsService.getAnalytics(businessId), HttpStatus.OK);
+            return new ResponseEntity<Analytics>(analytics, HttpStatus.OK);
         }
         return ResponseEntity.badRequest().body(new Message("No analytics for this business"));
     }

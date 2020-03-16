@@ -10,11 +10,14 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +28,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class User extends AuditModel {
+public class User extends AuditModel implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,8 +40,9 @@ public class User extends AuditModel {
     @NotBlank(message = "Please phone number should not be empty")
     private String phoneNumber;
 
+    @Email(message = "Must be a valid email")
     @NotBlank(message = "Please email should not be empty")
-    private String email;
+    private String username;
 
     @NotBlank(message = "Please password should not be empty")
     @JsonIgnoreProperties
@@ -54,4 +58,28 @@ public class User extends AuditModel {
     @JsonIgnore
     private EmailVerificationStatus emailVerificationStatus = EmailVerificationStatus.UNVERIFIED;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

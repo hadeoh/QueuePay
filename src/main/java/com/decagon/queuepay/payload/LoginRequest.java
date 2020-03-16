@@ -14,7 +14,7 @@ import java.util.List;
 public class LoginRequest {
 
     @NotBlank(message = "Please provide your email")
-    private String email;
+    private String username;
 
     @NotBlank(message = "Please provide your password")
     private String password;

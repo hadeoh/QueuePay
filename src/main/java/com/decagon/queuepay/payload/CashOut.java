@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CashOut {
 
-    @NotNull
+    @NotNull(message = "Please provide an amount")
     private Double amount;
 
     @NotNull

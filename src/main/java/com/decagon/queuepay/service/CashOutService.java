@@ -9,7 +9,9 @@ import com.decagon.queuepay.payload.CashOut;
 import com.decagon.queuepay.repositories.BusinessRepository;
 import com.decagon.queuepay.repositories.TransactionRepository;
 import com.decagon.queuepay.repositories.WalletRepository;
+import com.decagon.queuepay.response.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,19 +29,18 @@ public class CashOutService {
     @Autowired
     private BusinessRepository businessRepository;
 
-
     @Transactional
-    public String cashOut(Integer businessId, Integer walletId, CashOut cashOut) throws Exception {
+    public ResponseEntity<?> cashOut(Integer businessId, Integer walletId, CashOut cashOut) throws Exception {
         Business business = businessRepository.findById(businessId).orElse(null);
         if (business != null){
             Wallet wallet = walletRepository.findById(walletId).orElse(null);
             if (wallet != null){
                 if (wallet.getBusiness().getId().equals(business.getId())){
                     if (!wallet.getPin().equals(cashOut.getPin())) {
-                        throw new Exception("Incorrect pin");
+                        return ResponseEntity.badRequest().body(new Message("Incorrect Pin"));
                     }
-                    if (cashOut.getAmount() > wallet.getBalance()) {
-                        throw new Exception("Insufficient balance");
+                    if (cashOut.getAmount() >= wallet.getBalance()) {
+                        return ResponseEntity.badRequest().body(new Message("Insufficient Balance"));
                     }
                     Double cashOutAmount = cashOut.getAmount();
                     wallet.setBalance(wallet.getBalance() - cashOutAmount);
@@ -54,11 +55,11 @@ public class CashOutService {
                     transaction.setStatus(TransactionStatus.SUCCESSFUL);
 
                     transactionRepository.save(transaction);
-                    return "Successful";
+                    return ResponseEntity.ok(new Message("Successfully Cashed Out the amount of "+ cashOutAmount));
                 }
             }
-            throw new Exception("Wallet not available");
+            return ResponseEntity.badRequest().body(new Message("Wallet not available"));
         }
-        throw new Exception("Business not available");
+        return ResponseEntity.badRequest().body(new Message("Business not available"));
     }
 }

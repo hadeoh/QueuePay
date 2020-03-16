@@ -21,10 +21,16 @@ public class AnalyticsService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private BusinessRepository businessRepository;
-
-    @Autowired
     private WalletRepository walletRepository;
+
+    public Double totalWalletAmounts(Integer businessId){
+        List<Wallet> wallets = walletRepository.findByBusinessId(businessId);
+        Double balance = 0.0;
+        for (Wallet wallet : wallets){
+            balance += wallet.getBalance();
+        }
+        return balance;
+    }
 
     public Analytics getAnalytics(Integer businessId) {
         List<Transaction> transactions = transactionRepository.findAllByBusinessId(businessId);
@@ -32,7 +38,7 @@ public class AnalyticsService {
 
         Integer transactionVolume = 0;
         Double value = 0.0;
-        Double accountBalance = 0.0;
+        Double accountBalance = totalWalletAmounts(businessId);
         Integer successfulTransaction = 0;
         Integer failedTransaction = 0;
         Analytics analytics = new Analytics();
@@ -47,8 +53,6 @@ public class AnalyticsService {
                 }
                 if (trans.getTransactionType().equals(TransactionType.CREDIT)) {
                     accountBalance += trans.getAmount();
-                } else if (trans.getTransactionType().equals(TransactionType.DEBIT)) {
-                    accountBalance -= trans.getAmount();
                 }
             }
             analytics.setAccountBalance(accountBalance);
