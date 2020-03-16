@@ -4,15 +4,12 @@ import com.decagon.queuepay.exception.EmailException;
 import com.decagon.queuepay.models.user.EmailVerificationStatus;
 import com.decagon.queuepay.models.user.User;
 import com.decagon.queuepay.payload.LoginRequest;
-import com.decagon.queuepay.payload.MyUserDetails;
 import com.decagon.queuepay.models.user.Role;
 import com.decagon.queuepay.payload.SignupRequest;
 import com.decagon.queuepay.repositories.UserRepository;
 import com.decagon.queuepay.response.JwtResponse;
-import com.decagon.queuepay.response.Message;
 import com.decagon.queuepay.security.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,16 +25,14 @@ import java.util.Collections;
 @Service
 public class UserService {
     private UserRepository userRepository;
-    private MyUserDetailsService myUserDetailsService;
     private JwtProvider jwtProvider;
     private AuthenticationManager authenticationManager;
     private PasswordEncoder passwordEncoder;
     private EmailSenderService emailSenderService;
 
     @Autowired
-    public UserService(UserRepository userRepository, MyUserDetailsService myUserDetailsService, JwtProvider jwtProvider, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, EmailSenderService emailSenderService) {
+    public UserService(UserRepository userRepository, JwtProvider jwtProvider, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, EmailSenderService emailSenderService) {
         this.userRepository = userRepository;
-        this.myUserDetailsService = myUserDetailsService;
         this.jwtProvider = jwtProvider;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
@@ -45,24 +40,24 @@ public class UserService {
     }
 
     public void registration(@Valid SignupRequest signupRequest) throws Exception {
-        boolean existing = userRepository.existsByEmail(signupRequest.getEmail());
+        boolean existing = userRepository.existsByUsername(signupRequest.getUsername());
         if (existing) {
             throw new EmailException("This email already exists!");
         }
         User user = new User();
 
-        String token = jwtProvider.createToken(signupRequest.getEmail(), user.getRoles());
+        String token = jwtProvider.createToken(signupRequest.getUsername(), user.getRoles());
 
         user.setPhoneNumber(signupRequest.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        user.setEmail(signupRequest.getEmail());
+        user.setUsername(signupRequest.getUsername());
         user.setFullName(signupRequest.getFullName());
         user.setRoles(Collections.singletonList(Role.ROLE_CLIENT));
         user.setEmailVerificationToken(token);
         userRepository.save(user);
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(signupRequest.getEmail());
+        mailMessage.setTo(signupRequest.getUsername());
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("testing-70a156@inbox.mailtrap.io");
         mailMessage.setText("To confirm your account, please click here : "
@@ -81,15 +76,15 @@ public class UserService {
     }
 
     public ResponseEntity<?> authenticate(LoginRequest loginRequest){
-        String email = loginRequest.getEmail();
+        String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-        String token = jwtProvider.createToken(email, loginRequest.getRoles());
+        User myUserDetails = (User) authentication.getPrincipal();
+        String token = jwtProvider.createToken(username, loginRequest.getRoles());
 
-        return ResponseEntity.ok(new JwtResponse(token, myUserDetails.getId(), myUserDetails.getEmail(), myUserDetails.getFullName().toUpperCase(), myUserDetails.getPhoneNumber()));
+        return ResponseEntity.ok(new JwtResponse(token, myUserDetails.getId(), myUserDetails.getUsername(), myUserDetails.getFullName().toUpperCase(), myUserDetails.getPhoneNumber()));
     }
 
 

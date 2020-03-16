@@ -20,20 +20,21 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-@EnableWebSecurity
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private MyUserDetailsService myUserDetailsService;
     private AuthEntryPoint authEntryPoint;
-    private JwtFilter jwtFilter;
+
+    @Bean
+    public JwtFilter jwtFilter(){ return new JwtFilter();}
 
     @Autowired
-    public SecurityConfig(MyUserDetailsService myUserDetailsService, AuthEntryPoint authEntryPoint, JwtFilter jwtFilter){
+    public SecurityConfig(MyUserDetailsService myUserDetailsService, AuthEntryPoint authEntryPoint){
         this.myUserDetailsService = myUserDetailsService;
         this.authEntryPoint = authEntryPoint;
-        this.jwtFilter = jwtFilter;
     }
 
     @Override
@@ -56,12 +57,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(authEntryPoint)
-                .and().authorizeRequests().antMatchers("/auth/**").permitAll()
+                .and().authorizeRequests().antMatchers("/users/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
 }

@@ -24,8 +24,9 @@ public class SignupRequest {
     @NotBlank(message = "Please phone number should not be empty")
     private String phoneNumber;
 
+    @Email(message = "must not be blank")
     @NotBlank(message = "Please email should not be empty")
-    private String email;
+    private String username;
 
     @NotBlank(message = "Please password should not be empty")
     @Size(min = 6, max = 16, message = "Please password should be between 6 to 16 characters long")

@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -25,13 +26,14 @@ public class BusinessController {
     @Autowired
     private MapValidationErrorService mapValidationErrorService;
 
-    @GetMapping
-    public ResponseEntity<List<Business>> getAllBusiness(){
+    @GetMapping("/all")
+    public ResponseEntity<List<Business>> getAllBusiness(Principal principal){
+        System.out.println(principal.getName());
         List<Business> allBusiness = businessService.findAllBusiness();
        return ResponseEntity.ok().body(allBusiness);
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<?> businessReg(@RequestBody @Valid BusinessDto businessDto, BindingResult bindingResult, HttpServletRequest request)
             throws Exception {
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(bindingResult);

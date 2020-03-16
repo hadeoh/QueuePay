@@ -16,20 +16,20 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/users")
 @CrossOrigin
-public class AuthenticationController {
+public class UserController {
     private UserService userService;
     private MapValidationErrorService mapValidationErrorService;
 
     @Autowired
-    public AuthenticationController(UserService userService, MapValidationErrorService mapValidationErrorService) {
+    public UserController(UserService userService, MapValidationErrorService mapValidationErrorService) {
         this.userService = userService;
         this.mapValidationErrorService = mapValidationErrorService;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest, BindingResult bindingResult) throws Exception {
+    @PostMapping("/register")
+    public ResponseEntity<?> signUp(@RequestBody @Valid SignupRequest signupRequest, BindingResult bindingResult) throws Exception {
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(bindingResult);
         if (errorMap != null){
             return errorMap;

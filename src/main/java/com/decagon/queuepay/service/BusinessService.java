@@ -36,8 +36,8 @@ public class BusinessService {
 
     public void businessRegistration(@Valid BusinessDto businessDto, HttpServletRequest request) throws Exception {
         String token = jwtProvider.resolveToken(request);
-        String email = jwtProvider.getEmail(token);
-        Optional<User> user = userRepository.findByEmail(email);
+        String username = jwtProvider.getUsername(token);
+        Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
             throw new Exception("User not allowed on this app");
         }
