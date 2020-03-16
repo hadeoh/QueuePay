@@ -49,4 +49,6 @@ public class Business extends AuditModel {
     @Column(columnDefinition = "text")
     private String description;
 
+    private String businessOwner;
+
 }

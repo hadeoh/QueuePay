@@ -30,8 +30,8 @@ public class BusinessService {
     @Autowired
     private JwtProvider jwtProvider;
 
-    public List<Business> findAllBusiness(){
-        return businessRepository.findAll();
+    public List<Business> findAllBusiness(String username){
+        return businessRepository.findBusinessesByBusinessOwner(username);
     }
 
     public void businessRegistration(@Valid BusinessDto businessDto, HttpServletRequest request) throws Exception {
@@ -49,6 +49,7 @@ public class BusinessService {
         business.setLogoUrl(businessDto.getLogoUrl());
         business.setCacDocumentUrl(businessDto.getCacDocumentUrl());
         business.setDescription(businessDto.getDescription());
+        business.setBusinessOwner(username);
         wallet.setPin(businessDto.getPin());
         wallet.setWalletType(businessDto.getWalletType());
 
